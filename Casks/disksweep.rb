@@ -7,14 +7,13 @@ cask "disksweep" do
   desc "Disk cleaner with drill-down for developer caches, Docker and iOS simulators"
   homepage "https://github.com/vinicios-gomes/DiskSweep"
 
-  depends_on macos: ">= :sonoma"
+  depends_on macos: :sonoma
 
   app "DiskSweep.app"
 
   # O app usa assinatura ad hoc (sem notarização da Apple); remove a quarentena para o Gatekeeper não bloquear.
-  postflight do
-    system_command "/usr/bin/xattr",
-                   args: ["-dr", "com.apple.quarantine", "#{appdir}/DiskSweep.app"]
+  postflight_steps do
+    run "/usr/bin/xattr", "-dr", "com.apple.quarantine", "/Applications/DiskSweep.app"
   end
 
   zap trash: "~/Library/Application Support/DiskSweep"
