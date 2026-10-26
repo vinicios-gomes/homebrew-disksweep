@@ -1,0 +1,28 @@
+name: Bump cask
+# Sem segredos: o tap consulta as releases do DiskSweep e atualiza version/sha256 sozinho.
+on:
+  schedule: [{ cron: "17 */6 * * *" }]
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  bump:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Update cask to the newest DiskSweep release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          tag=$(gh api repos/vinicios-gomes/DiskSweep/releases --jq '.[0].tag_name')
+          ver="${tag#v}"
+          current=$(sed -n 's/^  version "\(.*\)"/\1/p' Casks/disksweep.rb)
+          [[ "$ver" != "$current" ]] || { echo "já está em $current"; exit 0; }
+          sha=$(curl -fsSL "https://github.com/vinicios-gomes/DiskSweep/releases/download/$tag/DiskSweep-$ver.dmg.sha256" | awk '{print $1}')
+          [[ "$sha" =~ ^[0-9a-f]{64}$ ]] || { echo "sha256 inválido: $sha"; exit 1; }
+          sed -i "s/^  version \".*\"/  version \"$ver\"/; s/^  sha256 \".*\"/  sha256 \"$sha\"/" Casks/disksweep.rb
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -am "disksweep $ver"
+          git push
