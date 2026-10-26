@@ -3,7 +3,9 @@
 Homebrew tap for [DiskSweep](https://github.com/vinicios-gomes/DiskSweep), a native macOS disk cleaner.
 
 ```bash
-brew install --cask vinicios-gomes/disksweep/disksweep
+brew tap vinicios-gomes/disksweep
+brew trust --cask vinicios-gomes/disksweep/disksweep   # Homebrew 7+ requires trusting third-party casks
+brew install --cask disksweep
 ```
 
 Upgrade with `brew upgrade --cask disksweep`; remove with `brew uninstall --cask --zap disksweep`.
