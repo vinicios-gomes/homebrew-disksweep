@@ -13,7 +13,7 @@ cask "disksweep" do
 
   # O app usa assinatura ad hoc (sem notarização da Apple); remove a quarentena para o Gatekeeper não bloquear.
   postflight_steps do
-    run "/usr/bin/xattr", "-dr", "com.apple.quarantine", "/Applications/DiskSweep.app"
+    run "/usr/bin/xattr", args: ["-dr", "com.apple.quarantine", "/Applications/DiskSweep.app"]
   end
 
   zap trash: "~/Library/Application Support/DiskSweep"
